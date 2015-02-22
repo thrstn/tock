@@ -1,0 +1,22 @@
+{
+  "name": "tock",
+  "version": "0.0.0",
+  "authors": [
+    "Þorsteinn Ólafsson <thrstn@gmail.com>"
+  ],
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "bootstrap": "~3.3.1"
+  }
+}
