@@ -17,6 +17,7 @@
     "tests"
   ],
   "devDependencies": {
-    "bootstrap": "~3.3.1"
+    "bootstrap": "~3.3.1",
+    "fontawesome": "~4.3.0"
   }
 }

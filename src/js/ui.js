@@ -20,6 +20,11 @@ tock.ui.bind = function () {
 			e.preventDefault();
 			tock.timer.stop(this);
 		})
+		.on('click', '.btn-reset-timer', function (e) {
+			// Stop the timer for selected entry
+			e.preventDefault();
+			tock.timer.reset(this);
+		})
 		.on('click', '.btn-add-entry', function (e) {
 			// Add a new entry to the layout
 			e.preventDefault();
@@ -52,6 +57,11 @@ tock.ui.bind = function () {
 			e.preventDefault();
 			tock.ui.resetLayout();
 		})
+		.on('click', '.btn-reset-timers', function (e) {
+			// Reset the timers to zero but keep the layout
+			e.preventDefault();
+			tock.ui.resetTimers();
+		})
 	;
 };
 
@@ -71,6 +81,7 @@ tock.ui.renderLayout = function () {
 
 		if (v.running) {
 			$entry.data('tock-timer-running', v.running);
+			tock.ui.timerButtonSwap($entry.find('.btn-start-timer'));
 		}
 
 		tock.ui.addEntry($entry);
@@ -104,28 +115,58 @@ tock.ui.resetLayout = function () {
 	tock.ui.refresh();
 };
 
+tock.ui.resetTimers = function () {
+	$('.entry').each(function() {
+		var $entry = $(this);
+
+		$entry.data('tock-timer-start', false);
+		$entry.data('tock-timer-elapsed', 0);
+	});
+
+	tock.ui.refresh();
+};
+
 // Render the timer in current state
 tock.ui.updateElapsed = function () {
 	$('.entry').each(function() {
-		var $entry = $(this);
+		var diff = 0,
+			start = 0,
+			elapsed = 0,
+			$entry = $(this);
+
 		if ($entry.data('tock-timer-running') === true) {
-			var start = $entry.data('tock-timer-start') / 1000,
-				elapsed = Date.now() / 1000,
-				diff = Math.ceil(elapsed - start),
-				h = Math.floor(diff / (60 * 60)),
-				m = Math.floor(diff % (60 * 60) / 60),
-				html = '';
-
-			$entry.data('tock-timer-elapsed', diff);
-
-			if (h > 0) {
-				html = h + 'H ';
+			if ($entry.data('tock-timer-start')) { // Button was pushed and timer is ticking
+				elapsed = Math.ceil(Date.now() / 1000);
+				start = $entry.data('tock-timer-start');
+				diff = Math.ceil(elapsed - start);
+				$entry.data('tock-timer-elapsed', diff);
+			}
+			else { // Start time is not available but we have elapsed data
+				diff = elapsed = $entry.data('tock-timer-elapsed');
+				start = Math.ceil(Date.now() / 1000) - elapsed;
+				$entry.data('tock-timer-start', start);
 			}
 
-			html = html + m + 'm';
-			$entry.find('.elapsed').html(html);
+			$entry.find('.elapsed .jira').html(tock.ui.formatTimeJira(diff));
+			$entry.find('.elapsed .dp').html(tock.ui.formatTimeDP(diff));
 		}
 	});
+};
+
+tock.ui.formatTimeJira = function (elapsed) {
+	var h = Math.floor(elapsed / (60 * 60)),
+		m = Math.floor(elapsed % (60 * 60) / 60),
+		html = '';
+
+	if (h > 0) {
+		html = h + 'H ';
+	}
+
+	return html + m + 'm';
+};
+
+tock.ui.formatTimeDP = function (elapsed) {
+	return (elapsed / (60*60)).toFixed(2);
 };
 
 // Change the state of the timer button
@@ -135,12 +176,12 @@ tock.ui.timerButtonSwap = function (button) {
 	if ($button.hasClass('btn-start-timer')) {
 		$button.removeClass('btn-start-timer btn-success')
 			.addClass('btn-stop-timer btn-danger')
-			.html('STOP');
+			.html('<i class="fa fa-circle-o-notch fa-spin"></i>');
 	}
 	else {
 		$button.removeClass('btn-stop-timer btn-danger')
 			.addClass('btn-start-timer btn-success')
-			.html('START');
+			.html('<i class="fa fa-play"></i>');
 	}
 };
 

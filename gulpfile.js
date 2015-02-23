@@ -15,7 +15,7 @@ var gulp = require('gulp'),
 
 // Compile less into css, create sourcemaps and minify.
 gulp.task('style', function () {
-	gulp.src('src/less/style.less')
+	gulp.src(['src/less/style.less'])
 		.pipe(less({}))
 		.on('error', function (e) { console.log('Error:' + e.message); })
 		.pipe(gulp.dest('dist/assets/css'))
@@ -53,6 +53,14 @@ gulp.task('images', function () {
 		})))
 		.on('error', function (e) { console.log('Error:' + e.message); })
 		.pipe(gulp.dest('dist/assets/images'));
+});
+
+
+// Copy font files
+gulp.task('fonts', function () {
+	gulp.src('bower_components/fontawesome/fonts/*')
+		.on('error', function (e) { console.log('Error:' + e.message); })
+		.pipe(gulp.dest('dist/assets/fonts'));
 });
 
 
@@ -104,6 +112,7 @@ gulp.task('default', ['clean'], function () {
 		'style',
 		'javascript',
 		'images',
+		'fonts',
 		'html',
 		'connect',
 		'watch'

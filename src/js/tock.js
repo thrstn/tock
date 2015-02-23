@@ -15,6 +15,6 @@ tock.generateId = function () {
 // Init everything
 tock.init = function () {
 	tock.storage.init();
-	tock.timer.init();
 	tock.ui.init();
+	tock.timer.init();
 };
