@@ -15,8 +15,13 @@ tock.timer.start = function (button) {
 		tock.timer.stop(button);
 	}
 	else {
-		$entry.data('tock-timer-running', true)
-			.data('tock-timer-start', Math.ceil(Date.now() / 1000));
+		$entry.data('tock-timer-running', true);
+        if ($entry.data('tock-timer-elapsed')) {
+            $entry.data('tock-timer-start', Math.ceil((Date.now() / 1000) - $entry.data('tock-timer-elapsed')));
+        }
+        else {
+            $entry.data('tock-timer-start', Math.ceil(Date.now() / 1000));
+        }
 		tock.ui.timerButtonSwap(button);
 	}
 };

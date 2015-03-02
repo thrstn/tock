@@ -171,17 +171,23 @@ tock.ui.formatTimeDP = function (elapsed) {
 
 // Change the state of the timer button
 tock.ui.timerButtonSwap = function (button) {
-	var $button = $(button);
+	var $button = $(button),
+        $entry = $button.parents('.entry');
 
 	if ($button.hasClass('btn-start-timer')) {
-		$button.removeClass('btn-start-timer btn-success')
+		$button.removeClass('btn-start-timer btn-success btn-warning')
 			.addClass('btn-stop-timer btn-danger')
-			.html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+			.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
 	}
+    else if ($entry.data('tock-timer-elapsed')) {
+        $button.removeClass('btn-stop-timer btn-danger')
+            .addClass('btn-start-timer btn-warning')
+            .html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+    }
 	else {
 		$button.removeClass('btn-stop-timer btn-danger')
 			.addClass('btn-start-timer btn-success')
-			.html('<i class="fa fa-play"></i>');
+			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
 	}
 };
 
