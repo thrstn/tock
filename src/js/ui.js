@@ -48,9 +48,14 @@ tock.ui.bind = function () {
 		})
 		.on('keyup', 'input[type=text]', function (e) {
 			// Trigger the blur event on input when enter key is pressed
-			if(e.which == 13) {
+			if (e.which == 13) {
 				$(this).trigger('blur');
 			}
+		})
+		.on('click', '.btn-export', function (e) {
+			// Reset the layout to default
+			e.preventDefault();
+			tock.export.toCSV();
 		})
 		.on('click', '.btn-reset-layout', function (e) {
 			// Reset the layout to default
@@ -77,6 +82,7 @@ tock.ui.renderLayout = function () {
 
 		if (v.elapsed) {
 			$entry.data('tock-timer-elapsed', parseInt(v.elapsed));
+			tock.ui.timerButtonSwap($entry.find('.btn-start-timer'));
 		}
 
 		if (v.running) {
@@ -94,7 +100,7 @@ tock.ui.saveLayout = function () {
 		"entries": []
 	};
 
-	$('.entry').each(function() {
+	$('.entry').each(function () {
 		var $entry = $(this);
 		var e = {
 			"id": $entry.attr('id'),
@@ -116,7 +122,7 @@ tock.ui.resetLayout = function () {
 };
 
 tock.ui.resetTimers = function () {
-	$('.entry').each(function() {
+	$('.entry').each(function () {
 		var $entry = $(this);
 
 		$entry.data('tock-timer-start', false);
@@ -128,25 +134,25 @@ tock.ui.resetTimers = function () {
 
 // Render the timer in current state
 tock.ui.updateElapsed = function () {
-	$('.entry').each(function() {
-		var diff = 0,
-			start = 0,
-			elapsed = 0,
-			$entry = $(this);
+	$('.entry').each(function () {
+		var $entry = $(this),
+			start = $entry.data('tock-timer-start'),
+			elapsed = $entry.data('tock-timer-elapsed'),
+			diff = elapsed;
 
 		if ($entry.data('tock-timer-running') === true) {
-			if ($entry.data('tock-timer-start')) { // Button was pushed and timer is ticking
+			if (start) { // Button was pushed and timer is ticking
 				elapsed = Math.ceil(Date.now() / 1000);
-				start = $entry.data('tock-timer-start');
 				diff = Math.ceil(elapsed - start);
 				$entry.data('tock-timer-elapsed', diff);
 			}
 			else { // Start time is not available but we have elapsed data
-				diff = elapsed = $entry.data('tock-timer-elapsed');
 				start = Math.ceil(Date.now() / 1000) - elapsed;
 				$entry.data('tock-timer-start', start);
 			}
+		}
 
+		if (diff > 0) {
 			$entry.find('.elapsed .jira').html(tock.ui.formatTimeJira(diff));
 			$entry.find('.elapsed .dp').html(tock.ui.formatTimeDP(diff));
 		}
@@ -166,27 +172,29 @@ tock.ui.formatTimeJira = function (elapsed) {
 };
 
 tock.ui.formatTimeDP = function (elapsed) {
-	return (elapsed / (60*60)).toFixed(2);
+	return (elapsed / (60 * 60)).toFixed(2);
 };
 
 // Change the state of the timer button
 tock.ui.timerButtonSwap = function (button) {
 	var $button = $(button),
-        $entry = $button.parents('.entry');
+		$entry = $button.parents('.entry');
 
-	if ($button.hasClass('btn-start-timer')) {
-		$button.removeClass('btn-start-timer btn-success btn-warning')
-			.addClass('btn-stop-timer btn-danger')
-			.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
+	if ($entry.data('tock-timer-running')) {
+		if ($button.hasClass('btn-start-timer')) {
+			$button.removeClass('btn-start-timer btn-success btn-warning')
+				.addClass('btn-stop-timer btn-danger')
+				.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
+		}
+		else {
+			$button.removeClass('btn-stop-timer btn-danger')
+				.addClass('btn-start-timer btn-success')
+				.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+		}
 	}
-    else if ($entry.data('tock-timer-elapsed')) {
-        $button.removeClass('btn-stop-timer btn-danger')
-            .addClass('btn-start-timer btn-warning')
-            .html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
-    }
-	else {
+	else if ($entry.data('tock-timer-elapsed')) {
 		$button.removeClass('btn-stop-timer btn-danger')
-			.addClass('btn-start-timer btn-success')
+			.addClass('btn-start-timer btn-warning')
 			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
 	}
 };

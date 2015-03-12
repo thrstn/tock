@@ -1,49 +1,49 @@
 body {
 	.container-fluid();
-	margin-bottom:60px;
+	margin-bottom: 60px;
 }
 
 header {
-	font-size:32px;
+	font-size: 32px;
 }
 
 main {
 	.entry {
-		margin-bottom:0;
-		position:relative;
+		margin-bottom: 0;
+		position: relative;
 
 		td {
-			border-top:0 !important;
+			border-top: 0 !important;
 		}
 
 		input[type=text] {
-			width:100%;
+			width: 100%;
 		}
 
 		.toggle {
-			width:40px;
+			width: 40px;
 
 			.btn {
-				width:100%;
-				display:block;
+				width: 100%;
+				display: block;
 			}
 
-            .fa-stack-2x {
-                color:fade(#fff, 25%);
-            }
+			.fa-stack-2x {
+				color: fade(#fff, 25%);
+			}
 		}
 
 		.elapsed {
-			width:100px;
-			white-space:nowrap;
-			vertical-align:middle;
-			text-align:right;
+			width: 120px;
+			white-space: nowrap;
+			vertical-align: middle;
+			text-align: right;
 
 			span {
-				padding:0 5px;
+				padding: 0 5px;
 
 				&.dp {
-					color:#999;
+					color: #999;
 				}
 			}
 		}
@@ -55,18 +55,23 @@ main {
 		.log {
 
 		}
+
+		.del {
+			width:1%;
+			white-space: nowrap;
+		}
 	}
 
 	.controls {
-		padding:10px 8px;
+		padding: 10px 8px;
 	}
 }
 
 footer {
-	position:absolute;
-	bottom:0;
-	left:0;
-	width:100%;
-	height:60px;
-	padding:10px @grid-gutter-width/2;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 60px;
+	padding: 10px @grid-gutter-width/2;
 }

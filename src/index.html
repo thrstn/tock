@@ -9,7 +9,12 @@
     <link href="/assets/css/style.min.css" rel="stylesheet">
 </head>
 <body onload="tock.init();">
-    <header><h1><i class="fa fa-clock-o"></i> tock</h1></header>
+    <header>
+		<div class="pull-right">
+			<a href="#" class="btn btn-info btn-export"><i class="fa fa-database"></i> <i class="fa fa-arrow-right"></i></a>
+		</div>
+		<h1><i class="fa fa-clock-o"></i> tock</h1>
+	</header>
     <main>
  		<table class="table template hidden">
 			<tbody>
@@ -36,7 +41,7 @@
 		</div>
 
         <div class="author">@thrstn 2015</div>
-        <div class="version">version 0.0.2</div>
+        <div class="version">version 0.0.3</div>
     </footer>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
