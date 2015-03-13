@@ -160,19 +160,27 @@ tock.ui.updateElapsed = function () {
 };
 
 tock.ui.formatTimeJira = function (elapsed) {
-	var h = Math.floor(elapsed / (60 * 60)),
-		m = Math.floor(elapsed % (60 * 60) / 60),
-		html = '';
+	if (elapsed) {
+		var h = Math.floor(elapsed / (60 * 60)),
+			m = Math.floor(elapsed % (60 * 60) / 60),
+			html = '';
 
-	if (h > 0) {
-		html = h + 'H ';
+		if (h > 0) {
+			html = h + 'H ';
+		}
+
+		return html + m + 'm';
 	}
 
-	return html + m + 'm';
+	return '0m';
 };
 
 tock.ui.formatTimeDP = function (elapsed) {
-	return (elapsed / (60 * 60)).toFixed(2);
+	if (elapsed) {
+		return (elapsed / (60 * 60)).toFixed(2);
+	}
+
+	return '0.0';
 };
 
 // Change the state of the timer button
