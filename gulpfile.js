@@ -66,7 +66,7 @@ gulp.task('fonts', function () {
 
 // Take care of the html
 gulp.task('html', function () {
-	gulp.src('src/index.html')
+	gulp.src('src/*.html')
 		.pipe(gulp.dest('dist'));
 });
 

@@ -43,15 +43,15 @@ tock.storage.initDefaultLayout = function () {
 			},
 			{
 				"id": tock.generateId(),
-				"task": 'Launch',
-				"log": "Start when you grab some launch.",
+				"task": 'Lunch',
+				"log": "Start when you grab some lunch.",
 				"running": false,
 				"elapsed": 0
 			},
 			{
 				"id": tock.generateId(),
-				"task": 'Other',
-				"log": "Something else.",
+				"task": '',
+				"log": "",
 				"running": false,
 				"elapsed": 0
 			}

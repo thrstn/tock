@@ -1,77 +1,105 @@
 body {
-	.container-fluid();
-	margin-bottom: 60px;
+  .container-fluid();
+  margin: 60px 0;
 }
 
 header {
-	font-size: 32px;
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  padding: 10px @grid-gutter-width/2;
+  background: #fafafa;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 5px 5px -5px rgba(0, 0, 0, .2);
+
+  h1 {
+    margin:0;
+  }
 }
 
 main {
-	.entry {
-		margin-bottom: 0;
-		position: relative;
+  .entry {
+    margin-bottom: 0;
+    position: relative;
 
-		td {
-			border-top: 0 !important;
-		}
+    td {
+      border-top: 0 !important;
+    }
 
-		input[type=text] {
-			width: 100%;
-		}
+    input[type=text] {
+      width: 100%;
+      padding: 20px 12px;
 
-		.toggle {
-			width: 40px;
+      &.focused {
+        padding: 10px 12px;
+      }
+    }
 
-			.btn {
-				width: 100%;
-				display: block;
-			}
+    .toggle {
+      width: 40px;
 
-			.fa-stack-2x {
-				color: fade(#fff, 25%);
-			}
-		}
+      .btn {
+        width: 100%;
+        display: block;
+      }
 
-		.elapsed {
-			width: 120px;
-			white-space: nowrap;
-			vertical-align: middle;
-			text-align: right;
+      .fa-stack-2x {
+        color: fade(#fff, 25%);
+      }
+    }
 
-			span {
-				padding: 0 5px;
+    .elapsed {
+      width: 120px;
+      white-space: nowrap;
+      vertical-align: middle;
+      text-align: right;
 
-				&.dp {
-					color: #999;
-				}
-			}
-		}
+      span {
+        padding: 0 5px;
 
-		.task {
+        &.dp {
+          color: #999;
+        }
+      }
+    }
 
-		}
+    .task {
 
-		.log {
+    }
 
-		}
+    .log {
 
-		.del {
-			width:1%;
-			white-space: nowrap;
-		}
-	}
+    }
 
-	.controls {
-		padding: 10px 8px;
-	}
+    .reset {
+      width: 1%;
+      white-space: nowrap;
+    }
+
+    .delete {
+      width: 1%;
+      white-space: nowrap;
+      padding-right: 0;
+    }
+  }
+
+  .controls {
+    padding: 10px 8px;
+  }
 }
 
 footer {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	height: 60px;
-	padding: 10px @grid-gutter-width/2;
+  position: fixed;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  padding: 10px @grid-gutter-width/2;
+  background: #fafafa;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, .2);
 }

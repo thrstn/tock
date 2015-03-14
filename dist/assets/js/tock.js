@@ -2,7 +2,7 @@
 tock = window.tock || {};
 tock.export = {};
 
-tock.export.toCSV = function () {
+tock.export.toCSV = function() {
 	var data = tock.storage.getItem('layout').entries,
 		csv = '';
 
@@ -54,6 +54,7 @@ tock.export.toCSV = function () {
 	link.click();
 	document.body.removeChild(link);
 };
+
 // Create objects
 tock = window.tock || {};
 tock.storage = {};
@@ -99,15 +100,15 @@ tock.storage.initDefaultLayout = function () {
 			},
 			{
 				"id": tock.generateId(),
-				"task": 'Launch',
-				"log": "Start when you grab some launch.",
+				"task": 'Lunch',
+				"log": "Start when you grab some lunch.",
 				"running": false,
 				"elapsed": 0
 			},
 			{
 				"id": tock.generateId(),
-				"task": 'Other',
-				"log": "Something else.",
+				"task": '',
+				"log": "",
 				"running": false,
 				"elapsed": 0
 			}
@@ -116,6 +117,7 @@ tock.storage.initDefaultLayout = function () {
 
 	tock.storage.setItem('layout', layout);
 };
+
 // Create objects
 tock = window.tock || {};
 tock.timer = {};
@@ -150,6 +152,7 @@ tock.timer.stop = function (button) {
 	if ($entry.data('tock-timer-running') === true) {
 		$entry.data('tock-timer-running', false)
 			.data('tock-timer-start', null);
+
 		tock.ui.timerButtonSwap(button);
 	}
 };
@@ -157,9 +160,11 @@ tock.timer.stop = function (button) {
 tock.timer.reset = function (button) {
 	var $entry = $(button).parents('.entry');
 
-	tock.timer.stop(button);
-	$entry.data('tock-timer-elapsed', null);
-	$entry.data('tock-timer-start', null);
+	$entry.data('tock-timer-running', false)
+		.data('tock-timer-elapsed', null)
+		.data('tock-timer-start', null);
+
+	tock.ui.timerButtonSwap($entry.find('.toggle .btn'));
 };
 
 tock.timer.tick = function () {
@@ -171,6 +176,7 @@ tock.timer.tick = function () {
 	}
 	tock.timer.timeout = setTimeout(tock.timer.tick, 1000);
 };
+
 // Create objects
 tock = window.tock || {};
 
@@ -196,66 +202,66 @@ tock = window.tock || {};
 tock.ui = {};
 
 // UI
-tock.ui.init = function () {
+tock.ui.init = function() {
 	tock.ui.bind();
 	tock.ui.renderLayout();
 };
 
-tock.ui.bind = function () {
+tock.ui.bind = function() {
 	$('body')
-		.on('click', '.btn-start-timer', function (e) {
+		.on('click', '.btn-start-timer', function(e) {
 			// Start the timer for selected entry
 			e.preventDefault();
 			tock.timer.start(this);
 		})
-		.on('click', '.btn-stop-timer', function (e) {
+		.on('click', '.btn-stop-timer', function(e) {
 			// Stop the timer for selected entry
 			e.preventDefault();
 			tock.timer.stop(this);
 		})
-		.on('click', '.btn-reset-timer', function (e) {
+		.on('click', '.btn-reset-timer', function(e) {
 			// Stop the timer for selected entry
 			e.preventDefault();
 			tock.timer.reset(this);
 		})
-		.on('click', '.btn-add-entry', function (e) {
+		.on('click', '.btn-add-entry', function(e) {
 			// Add a new entry to the layout
 			e.preventDefault();
 			tock.ui.createEntry();
 			tock.ui.saveLayout();
 		})
-		.on('click', '.btn-del-entry', function (e) {
+		.on('click', '.btn-del-entry', function(e) {
 			// Remove selected entry from the layout
 			e.preventDefault();
 			tock.ui.deleteEntry(this);
 			tock.ui.saveLayout();
 		})
-		.on('focus', 'input[type=text]', function () {
+		.on('focus', 'input[type=text]', function() {
 			// Expand the input when focused
 			$(this).addClass('focused');
 		})
-		.on('blur', 'input[type=text]', function () {
+		.on('blur', 'input[type=text]', function() {
 			// Shrink the input when blurred
 			$(this).removeClass('focused');
 			tock.ui.saveLayout();
 		})
-		.on('keyup', 'input[type=text]', function (e) {
-			// Trigger the blur event on input when enter key is pressed
-			if (e.which == 13) {
+		.on('keyup', 'input[type=text]', function(e) {
+			// Trigger the blur event on input when enter or escape key is pressed
+			if (e.which == 13 || e.which == 27) {
 				$(this).trigger('blur');
 			}
 		})
-		.on('click', '.btn-export', function (e) {
+		.on('click', '.btn-export', function(e) {
 			// Reset the layout to default
 			e.preventDefault();
 			tock.export.toCSV();
 		})
-		.on('click', '.btn-reset-layout', function (e) {
+		.on('click', '.btn-reset-layout', function(e) {
 			// Reset the layout to default
 			e.preventDefault();
 			tock.ui.resetLayout();
 		})
-		.on('click', '.btn-reset-timers', function (e) {
+		.on('click', '.btn-reset-timers', function(e) {
 			// Reset the timers to zero but keep the layout
 			e.preventDefault();
 			tock.ui.resetTimers();
@@ -263,10 +269,10 @@ tock.ui.bind = function () {
 	;
 };
 
-tock.ui.renderLayout = function () {
+tock.ui.renderLayout = function() {
 	var layout = tock.storage.getItem('layout');
 
-	$(layout.entries).each(function (k, v) {
+	$(layout.entries).each(function(k, v) {
 		var $entry = tock.ui.cloneTemplate()
 			.attr('id', v.id);
 
@@ -288,12 +294,12 @@ tock.ui.renderLayout = function () {
 
 };
 
-tock.ui.saveLayout = function () {
+tock.ui.saveLayout = function() {
 	var layout = {
 		"entries": []
 	};
 
-	$('.entry').each(function () {
+	$('.entry').each(function() {
 		var $entry = $(this);
 		var e = {
 			"id": $entry.attr('id'),
@@ -309,25 +315,20 @@ tock.ui.saveLayout = function () {
 	tock.storage.setItem('layout', layout);
 };
 
-tock.ui.resetLayout = function () {
+tock.ui.resetLayout = function() {
 	tock.storage.initDefaultLayout();
 	tock.ui.refresh();
 };
 
-tock.ui.resetTimers = function () {
-	$('.entry').each(function () {
-		var $entry = $(this);
-
-		$entry.data('tock-timer-start', false);
-		$entry.data('tock-timer-elapsed', 0);
+tock.ui.resetTimers = function() {
+	$('.btn-reset-timer').each(function() {
+		tock.timer.reset(this);
 	});
-
-	tock.ui.refresh();
 };
 
 // Render the timer in current state
-tock.ui.updateElapsed = function () {
-	$('.entry').each(function () {
+tock.ui.updateElapsed = function() {
+	$('.entry').each(function() {
 		var $entry = $(this),
 			start = $entry.data('tock-timer-start'),
 			elapsed = $entry.data('tock-timer-elapsed'),
@@ -349,10 +350,14 @@ tock.ui.updateElapsed = function () {
 			$entry.find('.elapsed .jira').html(tock.ui.formatTimeJira(diff));
 			$entry.find('.elapsed .dp').html(tock.ui.formatTimeDP(diff));
 		}
+		else {
+			$entry.find('.elapsed .jira').html('');
+			$entry.find('.elapsed .dp').html('');
+		}
 	});
 };
 
-tock.ui.formatTimeJira = function (elapsed) {
+tock.ui.formatTimeJira = function(elapsed) {
 	if (elapsed) {
 		var h = Math.floor(elapsed / (60 * 60)),
 			m = Math.floor(elapsed % (60 * 60) / 60),
@@ -368,7 +373,7 @@ tock.ui.formatTimeJira = function (elapsed) {
 	return '0m';
 };
 
-tock.ui.formatTimeDP = function (elapsed) {
+tock.ui.formatTimeDP = function(elapsed) {
 	if (elapsed) {
 		return (elapsed / (60 * 60)).toFixed(2);
 	}
@@ -377,7 +382,7 @@ tock.ui.formatTimeDP = function (elapsed) {
 };
 
 // Change the state of the timer button
-tock.ui.timerButtonSwap = function (button) {
+tock.ui.timerButtonSwap = function(button) {
 	var $button = $(button),
 		$entry = $button.parents('.entry');
 
@@ -385,48 +390,57 @@ tock.ui.timerButtonSwap = function (button) {
 		if ($button.hasClass('btn-start-timer')) {
 			$button.removeClass('btn-start-timer btn-success btn-warning')
 				.addClass('btn-stop-timer btn-danger')
+				.attr('title', 'Pause this timer')
 				.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
 		}
 		else {
 			$button.removeClass('btn-stop-timer btn-danger')
 				.addClass('btn-start-timer btn-success')
+				.attr('title', 'Start this timer')
 				.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
 		}
 	}
 	else if ($entry.data('tock-timer-elapsed')) {
 		$button.removeClass('btn-stop-timer btn-danger')
 			.addClass('btn-start-timer btn-warning')
+			.attr('title', 'Start this timer')
+			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+	}
+	else {
+		$button.removeClass('btn-stop-timer btn-danger')
+			.addClass('btn-start-timer btn-success')
+			.attr('title', 'Start this timer')
 			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
 	}
 };
 
 
-tock.ui.cloneTemplate = function () {
+tock.ui.cloneTemplate = function() {
 	return tock.ui.getTemplateEntry()
 		.clone()
 		.removeClass('template hidden')
 		.addClass('entry');
 };
 
-tock.ui.createEntry = function () {
+tock.ui.createEntry = function() {
 	tock.ui.addEntry(tock.ui.cloneTemplate());
 };
 
-tock.ui.addEntry = function (entry) {
+tock.ui.addEntry = function(entry) {
 	$('.controls', 'main')
 		.before(entry);
 };
 
-tock.ui.deleteEntry = function (element) {
+tock.ui.deleteEntry = function(element) {
 	var $entry = $(element)
 		.parents('.entry');
 	$entry.remove();
 };
 
-tock.ui.getTemplateEntry = function () {
+tock.ui.getTemplateEntry = function() {
 	return $('.template');
 };
 
-tock.ui.refresh = function () {
+tock.ui.refresh = function() {
 	window.location = '';
 };

@@ -2,7 +2,7 @@
 tock = window.tock || {};
 tock.export = {};
 
-tock.export.toCSV = function () {
+tock.export.toCSV = function() {
 	var data = tock.storage.getItem('layout').entries,
 		csv = '';
 

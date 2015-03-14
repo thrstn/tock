@@ -32,6 +32,7 @@ tock.timer.stop = function (button) {
 	if ($entry.data('tock-timer-running') === true) {
 		$entry.data('tock-timer-running', false)
 			.data('tock-timer-start', null);
+
 		tock.ui.timerButtonSwap(button);
 	}
 };
@@ -39,9 +40,11 @@ tock.timer.stop = function (button) {
 tock.timer.reset = function (button) {
 	var $entry = $(button).parents('.entry');
 
-	tock.timer.stop(button);
-	$entry.data('tock-timer-elapsed', null);
-	$entry.data('tock-timer-start', null);
+	$entry.data('tock-timer-running', false)
+		.data('tock-timer-elapsed', null)
+		.data('tock-timer-start', null);
+
+	tock.ui.timerButtonSwap($entry.find('.toggle .btn'));
 };
 
 tock.timer.tick = function () {
