@@ -93,21 +93,28 @@ tock.storage.initDefaultLayout = function () {
 		"entries": [
 			{
 				"id": tock.generateId(),
-				"task": "All day",
-				"log": "You start this timer when you start working and leave it running all day.",
+				"task": "Viðvera",
+				"log": "",
 				"running": false,
 				"elapsed": 0
 			},
 			{
 				"id": tock.generateId(),
-				"task": 'Lunch',
-				"log": "Start when you grab some lunch.",
+				"task": "Matur",
+				"log": "",
 				"running": false,
 				"elapsed": 0
 			},
 			{
 				"id": tock.generateId(),
-				"task": '',
+				"task": "",
+				"log": "",
+				"running": false,
+				"elapsed": 0
+			},
+			{
+				"id": tock.generateId(),
+				"task": "",
 				"log": "",
 				"running": false,
 				"elapsed": 0
