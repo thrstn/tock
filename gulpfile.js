@@ -1,120 +1,110 @@
 // Require all plugins
 var gulp = require('gulp'),
 	del = require('del'),
-	less = require('gulp-less'),
-	cache = require('gulp-cache'),
-	cssmin = require('gulp-minify-css'),
-	rename = require('gulp-rename'),
-	concat = require('gulp-concat'),
-	uglify = require('gulp-uglify'),
-	jshint = require('gulp-jshint'),
-	connect = require('gulp-connect'),
-	imagemin = require('gulp-imagemin'),
-	sourcemaps = require('gulp-sourcemaps');
+	plugins = require('gulp-load-plugins')();
 
 
 // Compile less into css, create sourcemaps and minify.
-gulp.task('style', function () {
-	gulp.src(['src/less/style.less'])
-		.pipe(less({}))
-		.on('error', function (e) { console.log('Error:' + e.message); })
+gulp.task('style', ['clean'], function () {
+	return gulp.src(['src/less/style.less'])
+		.pipe(plugins.plumber())
+		.pipe(plugins.less())
 		.pipe(gulp.dest('dist/assets/css'))
-		.pipe(rename({suffix: '.min'}))
-		.pipe(cssmin({keepSpecialComments: 0	}))
+		.pipe(plugins.rename({suffix: '.min'}))
+		.pipe(plugins.cleanCss({keepSpecialComments: false}))
 		.pipe(gulp.dest('dist/assets/css'))
-		.pipe(connect.reload());
+		.pipe(plugins.connect.reload());
 });
 
 
 // Run jshint on script files, concat and create sourcemaps. Uglify.
-gulp.task('javascript', function () {
-	gulp.src(['src/js/**/*.js'])
-		.pipe(jshint())
-		.pipe(jshint.reporter('jshint-stylish'))
-		.pipe(concat('tock.js'))
-		.on('error', function (e) { console.log('Error:' + e.message); })
+gulp.task('javascript', ['clean'], function () {
+	return gulp.src(['src/js/**/*.js'])
+		.pipe(plugins.plumber())
+		.pipe(plugins.jshint())
+		.pipe(plugins.jshint.reporter('jshint-stylish'))
+		.pipe(plugins.concat('tock.js'))
 		.pipe(gulp.dest('dist/assets/js'))
-		.pipe(rename({suffix: '.min'}))
-		.pipe(sourcemaps.init())
-		.pipe(uglify())
-		.on('error', function (e) { console.log('Error:' + e.message); })
-		.pipe(sourcemaps.write('.'))
+		.pipe(plugins.rename({suffix: '.min'}))
+		.pipe(plugins.sourcemaps.init())
+		.pipe(plugins.uglify())
+		.pipe(plugins.sourcemaps.write('.'))
 		.pipe(gulp.dest('dist/assets/js'));
 });
 
 
 // Minify new or updated images.
-gulp.task('images', function () {
-	gulp.src('src/images/*')
-		.pipe(cache(imagemin({
+gulp.task('images', ['clean'], function () {
+	return gulp.src('src/images/*')
+		.pipe(plugins.plumber())
+		.pipe(plugins.cache(plugins.imagemin({
 			optimizationLevel: 5,
 			progressive: true,
 			interlaced: true
 		})))
-		.on('error', function (e) { console.log('Error:' + e.message); })
 		.pipe(gulp.dest('dist/assets/images'));
 });
 
 
 // Copy font files
-gulp.task('fonts', function () {
+gulp.task('fonts', ['clean'], function () {
 	gulp.src('bower_components/fontawesome/fonts/*')
-		.on('error', function (e) { console.log('Error:' + e.message); })
+		.pipe(plugins.plumber())
 		.pipe(gulp.dest('dist/assets/fonts'));
 });
 
 
 // Take care of the html
-gulp.task('html', function () {
-	gulp.src('src/*.html')
+gulp.task('html', ['clean'], function () {
+	return gulp.src('src/*.html')
+		.pipe(plugins.plumber())
 		.pipe(gulp.dest('dist'));
 });
 
 
 // Jshint the gulpfile
 gulp.task('test', function () {
-	gulp.src('gulpfile.js')
-		.pipe(jshint())
-		.pipe(jshint.reporter('jshint-stylish'));
+	return gulp.src('gulpfile.js')
+		.pipe(plugins.plumber())
+		.pipe(plugins.jshint())
+		.pipe(plugins.jshint.reporter('jshint-stylish'));
 });
 
 
 // Clean the assets folder
-gulp.task('clean', function (callback) {
-	// We use a callback to ensure the task finishes before exiting.
-	del(['dist'], callback);
+gulp.task('clean', function () {
+	del(['dist']);
 });
 
 
 // Watch for changes
 gulp.task('watch', function () {
-	gulp.watch('src/less/**/*.less', ['style', 'reload']);
-	gulp.watch('src/js/**/*.js', ['javascript', 'reload']);
+	gulp.watch('src/less/*.less', ['style', 'reload']);
+	gulp.watch('src/js/*.js', ['javascript', 'reload']);
 	gulp.watch('src/images/**/*', ['images', 'reload']);
-	gulp.watch('src/**/*.html', ['html', 'reload']);
+	gulp.watch('src/*.html', ['html', 'reload']);
 });
 
 
 gulp.task('connect', function () {
-	return connect.server({
+	return plugins.connect.server({
 		root: 'dist',
 		livereload: true
 	});
 });
 
 gulp.task('reload', function () {
-	connect.reload();
+	plugins.connect.reload();
 });
 
 // Default task. Run everything.
-gulp.task('default', ['clean'], function () {
-	gulp.start(
-		'style',
-		'javascript',
-		'images',
-		'fonts',
-		'html',
-		'connect',
-		'watch'
-	);
-});
+gulp.task('default', [
+	'style',
+	'javascript',
+	'images',
+	'fonts',
+	'html',
+	'connect',
+	'watch'
+	]
+);

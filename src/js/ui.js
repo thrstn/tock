@@ -189,32 +189,40 @@ tock.ui.timerButtonSwap = function(button) {
 
 	if ($entry.data('tock-timer-running')) {
 		if ($button.hasClass('btn-start-timer')) {
-			$button.removeClass('btn-start-timer btn-success btn-warning')
-				.addClass('btn-stop-timer btn-danger')
-				.attr('title', 'Pause this timer')
-				.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
+			tock.ui.timerButtonSwapToRunning($button);
 		}
 		else {
-			$button.removeClass('btn-stop-timer btn-danger')
-				.addClass('btn-start-timer btn-success')
-				.attr('title', 'Start this timer')
-				.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+			tock.ui.timerButtonSwapToStart($button);
 		}
 	}
 	else if ($entry.data('tock-timer-elapsed')) {
-		$button.removeClass('btn-stop-timer btn-danger')
-			.addClass('btn-start-timer btn-warning')
-			.attr('title', 'Start this timer')
-			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+		tock.ui.timerButtonSwapToPaused($button);
 	}
 	else {
-		$button.removeClass('btn-stop-timer btn-danger')
-			.addClass('btn-start-timer btn-success')
-			.attr('title', 'Start this timer')
-			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+		tock.ui.timerButtonSwapToStart($button);
 	}
 };
 
+tock.ui.timerButtonSwapToStart = function($button) {
+	$button.removeClass('btn-stop-timer btn-danger btn-warning')
+		.addClass('btn-start-timer btn-success')
+		.attr('title', 'Start this timer')
+		.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+};
+
+tock.ui.timerButtonSwapToPaused = function($button) {
+	$button.removeClass('btn-stop-timer btn-danger')
+		.addClass('btn-start-timer btn-warning')
+		.attr('title', 'Start this timer')
+		.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+};
+
+tock.ui.timerButtonSwapToRunning = function($button) {
+	$button.removeClass('btn-start-timer btn-success btn-warning')
+		.addClass('btn-stop-timer btn-danger')
+		.attr('title', 'Pause this timer')
+		.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
+};
 
 tock.ui.cloneTemplate = function() {
 	return tock.ui.getTemplateEntry()
