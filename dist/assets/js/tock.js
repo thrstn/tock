@@ -93,28 +93,21 @@ tock.storage.initDefaultLayout = function () {
 		"entries": [
 			{
 				"id": tock.generateId(),
-				"task": "Viðvera",
-				"log": "",
+				"task": "All day",
+				"log": "You start this timer when you start working and leave it running all day.",
 				"running": false,
 				"elapsed": 0
 			},
 			{
 				"id": tock.generateId(),
-				"task": "Matur",
-				"log": "",
+				"task": 'Lunch',
+				"log": "Start when you grab some lunch.",
 				"running": false,
 				"elapsed": 0
 			},
 			{
 				"id": tock.generateId(),
-				"task": "",
-				"log": "",
-				"running": false,
-				"elapsed": 0
-			},
-			{
-				"id": tock.generateId(),
-				"task": "",
+				"task": '',
 				"log": "",
 				"running": false,
 				"elapsed": 0
@@ -143,6 +136,14 @@ tock.timer.start = function (button) {
 	}
 	else {
 		$entry.data('tock-timer-running', true);
+		var $elapsedInput = $entry.find('.elapsed .jira');
+
+		// We have a value in the timer box. Let's use that for the elapsed time
+		if ($elapsedInput.val() !== '') {
+			$entry.data('tock-timer-elapsed', tock.ui.formatJiraTime($elapsedInput.val()));
+		}
+
+		// Generate start time. Set it to now if we have no elapsed time
         if ($entry.data('tock-timer-elapsed')) {
             $entry.data('tock-timer-start', Math.ceil((Date.now() / 1000) - $entry.data('tock-timer-elapsed')));
         }
@@ -170,6 +171,10 @@ tock.timer.reset = function (button) {
 	$entry.data('tock-timer-running', false)
 		.data('tock-timer-elapsed', null)
 		.data('tock-timer-start', null);
+
+	// Update ui
+	$entry.find('.elapsed .jira').val('');
+	$entry.find('.elapsed .dp').html('');
 
 	tock.ui.timerButtonSwap($entry.find('.toggle .btn'));
 };
@@ -339,8 +344,10 @@ tock.ui.updateElapsed = function() {
 		var $entry = $(this),
 			start = $entry.data('tock-timer-start'),
 			elapsed = $entry.data('tock-timer-elapsed'),
+			$elapsedInput = $entry.find('.elapsed .jira'),
 			diff = elapsed;
 
+		// Update the timer every second with a new time
 		if ($entry.data('tock-timer-running') === true) {
 			if (start) { // Button was pushed and timer is ticking
 				elapsed = Math.ceil(Date.now() / 1000);
@@ -351,15 +358,24 @@ tock.ui.updateElapsed = function() {
 				start = Math.ceil(Date.now() / 1000) - elapsed;
 				$entry.data('tock-timer-start', start);
 			}
-		}
 
-		if (diff > 0) {
-			$entry.find('.elapsed .jira').html(tock.ui.formatTimeJira(diff));
+			// Draw the new timer value
+			$elapsedInput.val(tock.ui.formatTimeJira(diff));
 			$entry.find('.elapsed .dp').html(tock.ui.formatTimeDP(diff));
 		}
+		else if (elapsed > 0 && $elapsedInput.val() === '' && !$elapsedInput.hasClass('focused')) {
+			// Timer is not running but we have elapsed data. Maybe we just refreshed the browser while paused
+			// Let's draw the elaped time
+			$elapsedInput.val(tock.ui.formatTimeJira(diff));
+			$entry.find('.elapsed .dp').html(tock.ui.formatTimeDP(diff));
+		}
+
+		// Disable input if timer is running
+		if ($entry.data('tock-timer-running') === true) {
+			$elapsedInput.attr('readonly', 'readonly');
+		}
 		else {
-			$entry.find('.elapsed .jira').html('');
-			$entry.find('.elapsed .dp').html('');
+			$elapsedInput.removeAttr('readonly');
 		}
 	});
 };
@@ -380,6 +396,35 @@ tock.ui.formatTimeJira = function(elapsed) {
 	return '0m';
 };
 
+tock.ui.formatJiraTime = function(string) {
+	if (string) {
+		var h = string.match(/[0-9]+h/i),
+			m = string.match(/[0-9]+m/i),
+			ts = 0;
+
+		if (h && h.length) {
+			var hours = parseInt(h[0].replace(/h/ig));
+			console.log(hours);
+			if (hours > 0) {
+				ts += (60 * 60 * hours);
+			}
+		}
+
+		if (m && m.length) {
+			var minutes = parseInt(m[0].replace(/m/ig));
+			console.log(minutes);
+			if (minutes > 0) {
+				ts += (60 * minutes);
+			}
+		}
+
+		console.log(ts);
+		return ts;
+	}
+
+	return 0;
+};
+
 tock.ui.formatTimeDP = function(elapsed) {
 	if (elapsed) {
 		return (elapsed / (60 * 60)).toFixed(2);
@@ -395,32 +440,40 @@ tock.ui.timerButtonSwap = function(button) {
 
 	if ($entry.data('tock-timer-running')) {
 		if ($button.hasClass('btn-start-timer')) {
-			$button.removeClass('btn-start-timer btn-success btn-warning')
-				.addClass('btn-stop-timer btn-danger')
-				.attr('title', 'Pause this timer')
-				.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
+			tock.ui.timerButtonSwapToRunning($button);
 		}
 		else {
-			$button.removeClass('btn-stop-timer btn-danger')
-				.addClass('btn-start-timer btn-success')
-				.attr('title', 'Start this timer')
-				.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+			tock.ui.timerButtonSwapToStart($button);
 		}
 	}
 	else if ($entry.data('tock-timer-elapsed')) {
-		$button.removeClass('btn-stop-timer btn-danger')
-			.addClass('btn-start-timer btn-warning')
-			.attr('title', 'Start this timer')
-			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+		tock.ui.timerButtonSwapToPaused($button);
 	}
 	else {
-		$button.removeClass('btn-stop-timer btn-danger')
-			.addClass('btn-start-timer btn-success')
-			.attr('title', 'Start this timer')
-			.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+		tock.ui.timerButtonSwapToStart($button);
 	}
 };
 
+tock.ui.timerButtonSwapToStart = function($button) {
+	$button.removeClass('btn-stop-timer btn-danger btn-warning')
+		.addClass('btn-start-timer btn-success')
+		.attr('title', 'Start this timer')
+		.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+};
+
+tock.ui.timerButtonSwapToPaused = function($button) {
+	$button.removeClass('btn-stop-timer btn-danger')
+		.addClass('btn-start-timer btn-warning')
+		.attr('title', 'Start this timer')
+		.html('<span class="fa-stack"><i class="fa fa-cog fa-stack-2x"></i><i class="fa fa-play fa-stack-1x"></i></span>');
+};
+
+tock.ui.timerButtonSwapToRunning = function($button) {
+	$button.removeClass('btn-start-timer btn-success btn-warning')
+		.addClass('btn-stop-timer btn-danger')
+		.attr('title', 'Pause this timer')
+		.html('<span class="fa-stack"><i class="fa fa-cog fa-spin fa-stack-2x"></i><i class="fa fa-pause fa-stack-1x"></i></span>');
+};
 
 tock.ui.cloneTemplate = function() {
 	return tock.ui.getTemplateEntry()

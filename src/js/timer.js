@@ -16,6 +16,14 @@ tock.timer.start = function (button) {
 	}
 	else {
 		$entry.data('tock-timer-running', true);
+		var $elapsedInput = $entry.find('.elapsed .jira');
+
+		// We have a value in the timer box. Let's use that for the elapsed time
+		if ($elapsedInput.val() !== '') {
+			$entry.data('tock-timer-elapsed', tock.ui.formatJiraTime($elapsedInput.val()));
+		}
+
+		// Generate start time. Set it to now if we have no elapsed time
         if ($entry.data('tock-timer-elapsed')) {
             $entry.data('tock-timer-start', Math.ceil((Date.now() / 1000) - $entry.data('tock-timer-elapsed')));
         }
@@ -43,6 +51,10 @@ tock.timer.reset = function (button) {
 	$entry.data('tock-timer-running', false)
 		.data('tock-timer-elapsed', null)
 		.data('tock-timer-start', null);
+
+	// Update ui
+	$entry.find('.elapsed .jira').val('');
+	$entry.find('.elapsed .dp').html('');
 
 	tock.ui.timerButtonSwap($entry.find('.toggle .btn'));
 };

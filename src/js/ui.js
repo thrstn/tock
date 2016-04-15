@@ -133,8 +133,10 @@ tock.ui.updateElapsed = function() {
 		var $entry = $(this),
 			start = $entry.data('tock-timer-start'),
 			elapsed = $entry.data('tock-timer-elapsed'),
+			$elapsedInput = $entry.find('.elapsed .jira'),
 			diff = elapsed;
 
+		// Update the timer every second with a new time
 		if ($entry.data('tock-timer-running') === true) {
 			if (start) { // Button was pushed and timer is ticking
 				elapsed = Math.ceil(Date.now() / 1000);
@@ -145,15 +147,24 @@ tock.ui.updateElapsed = function() {
 				start = Math.ceil(Date.now() / 1000) - elapsed;
 				$entry.data('tock-timer-start', start);
 			}
-		}
 
-		if (diff > 0) {
-			$entry.find('.elapsed .jira').html(tock.ui.formatTimeJira(diff));
+			// Draw the new timer value
+			$elapsedInput.val(tock.ui.formatTimeJira(diff));
 			$entry.find('.elapsed .dp').html(tock.ui.formatTimeDP(diff));
 		}
+		else if (elapsed > 0 && $elapsedInput.val() === '' && !$elapsedInput.hasClass('focused')) {
+			// Timer is not running but we have elapsed data. Maybe we just refreshed the browser while paused
+			// Let's draw the elaped time
+			$elapsedInput.val(tock.ui.formatTimeJira(diff));
+			$entry.find('.elapsed .dp').html(tock.ui.formatTimeDP(diff));
+		}
+
+		// Disable input if timer is running
+		if ($entry.data('tock-timer-running') === true) {
+			$elapsedInput.attr('readonly', 'readonly');
+		}
 		else {
-			$entry.find('.elapsed .jira').html('');
-			$entry.find('.elapsed .dp').html('');
+			$elapsedInput.removeAttr('readonly');
 		}
 	});
 };
@@ -172,6 +183,35 @@ tock.ui.formatTimeJira = function(elapsed) {
 	}
 
 	return '0m';
+};
+
+tock.ui.formatJiraTime = function(string) {
+	if (string) {
+		var h = string.match(/[0-9]+h/i),
+			m = string.match(/[0-9]+m/i),
+			ts = 0;
+
+		if (h && h.length) {
+			var hours = parseInt(h[0].replace(/h/ig));
+			console.log(hours);
+			if (hours > 0) {
+				ts += (60 * 60 * hours);
+			}
+		}
+
+		if (m && m.length) {
+			var minutes = parseInt(m[0].replace(/m/ig));
+			console.log(minutes);
+			if (minutes > 0) {
+				ts += (60 * minutes);
+			}
+		}
+
+		console.log(ts);
+		return ts;
+	}
+
+	return 0;
 };
 
 tock.ui.formatTimeDP = function(elapsed) {

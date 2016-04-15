@@ -1,8 +1,11 @@
-input[type=text] {
-  &.focused {
-    position: absolute;
-    left: 0;
-    top: 8px;
-    height: auto !important;
-  }
+.task,
+.log {
+	input[type=text] {
+		&.grow.focused {
+			position: absolute;
+			left: 0;
+			top: 8px;
+			height: auto !important;
+		}
+	}
 }
